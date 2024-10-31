@@ -72,11 +72,11 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const payload = { sub: user._id, email: user.email };
-    console.log('Creating JWT token with payload:', payload);
+    const token = this._createToken(user);
+    console.log('Token generated successfully');
     
     return {
-      access_token: this.jwtService.sign(payload),
+      token,
       user: {
         id: user._id,
         email: user.email,
