@@ -18,11 +18,7 @@ export class AuthService {
     private configService: ConfigService,
     private emailService: EmailService,
   ) {
-    if (!this.jwtService) {
-      console.error('JwtService is not defined!');
-    } else {
-      console.log('JwtService successfully injected.');
-    }
+    console.log('AuthService constructor - jwtService:', !!this.jwtService);
   }
 
   async signUp(signUpDto: SignUpDto): Promise<any> {
@@ -55,6 +51,7 @@ export class AuthService {
 
   async login(loginDto: LoginDto): Promise<any> {
     console.log('Login attempt for email:', loginDto.email);
+    console.log('JwtService available in login:', !!this.jwtService);
     
     const user = await this.userModel.findOne({ email: loginDto.email });
     console.log('User found:', !!user);
@@ -72,6 +69,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    console.log('About to create token - jwtService exists:', !!this.jwtService);
     const token = this._createToken(user);
     console.log('Token generated successfully');
     
@@ -112,10 +110,26 @@ export class AuthService {
   }
 
   private _createToken(user: UserDocument): string {
+    console.log('_createToken called - jwtService exists:', !!this.jwtService);
+    console.log('jwtService methods:', Object.keys(this.jwtService || {}));
+    
+    if (!this.jwtService) {
+      throw new Error('JwtService is not properly injected');
+    }
+
     const payload = {
       sub: user._id,
       email: user.email,
     };
-    return this.jwtService.sign(payload);
+    console.log('Creating token with payload:', payload);
+    
+    try {
+      const token = this.jwtService.sign(payload);
+      console.log('Token created successfully');
+      return token;
+    } catch (error) {
+      console.error('Error creating token:', error);
+      throw error;
+    }
   }
 }
