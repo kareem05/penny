@@ -48,38 +48,35 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto): Promise<any> {
-    try {
-      const { email, password } = loginDto;
-
-      // Find user by email
-      const user: UserDocument | null = await this.userModel.findOne({ email });
-      if (!user) {
-        throw new UnauthorizedException('Invalid email or password');
-      }
-
-      // Verify password
-      const isPasswordValid = await bcrypt.compare(password, user.password);
-      if (!isPasswordValid) {
-        throw new UnauthorizedException('Invalid email or password');
-      }
-
-      // Generate JWT token
-      const token = this._createToken(user);
-
-      return {
-        user: {
-          id: user._id,
-          email: user.email,
-          name: user.name,
-        },
-        token,
-      };
-    } catch (error) {
-      if (error instanceof UnauthorizedException) {
-        throw error;
-      }
-      throw new UnauthorizedException('An error occurred during login');
+    console.log('Login attempt for email:', loginDto.email);
+    
+    const user = await this.userModel.findOne({ email: loginDto.email });
+    console.log('User found:', !!user);
+    
+    if (!user) {
+      console.log('User not found');
+      throw new UnauthorizedException('Invalid credentials');
     }
+
+    const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
+    console.log('Password valid:', isPasswordValid);
+
+    if (!isPasswordValid) {
+      console.log('Invalid password');
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const payload = { sub: user._id, email: user.email };
+    console.log('Creating JWT token with payload:', payload);
+    
+    return {
+      access_token: this.jwtService.sign(payload),
+      user: {
+        id: user._id,
+        email: user.email,
+        name: user.name
+      }
+    };
   }
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<any> {
