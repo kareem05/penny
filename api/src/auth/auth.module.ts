@@ -27,10 +27,7 @@ import { EmailService } from './email/email.service';
   ],
   controllers: [AuthController],
   providers: [
-    {
-      provide: AuthService,
-      useClass: AuthService,
-    },
+    AuthService,
     JwtStrategy,
     EmailService,
     ConfigService,

@@ -17,7 +17,13 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
     private emailService: EmailService,
-  ) {}
+  ) {
+    if (!this.jwtService) {
+      console.error('JwtService is not defined!');
+    } else {
+      console.log('JwtService successfully injected.');
+    }
+  }
 
   async signUp(signUpDto: SignUpDto): Promise<any> {
     const { email, password, name } = signUpDto;
