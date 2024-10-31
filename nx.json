@@ -25,9 +25,9 @@
       "runner": "@nx/workspace/tasks-runners/default",
       "options": {
         "cacheDirectory": ".nx/cache",
-        "parallel": 3,
-        "cacheableOperations": ["build", "test", "lint", "e2e"],
-        "runtimeCacheInputs": ["node -v"]
+        "parallel": 1,
+        "useDaemonProcess": false,
+        "cacheableOperations": ["build", "test", "lint", "e2e"]
       }
     }
   }

@@ -4,11 +4,11 @@
   "license": "MIT",
   "main": "dist/api/main.js",
   "scripts": {
-    "start:api": "NODE_ENV=development NX_DAEMON=false nx run api:serve",
+    "start:api": "NODE_ENV=development NX_DAEMON=false nx run api:serve --skip-nx-cache",
     "start:client": "nx run client:serve --skip-nx-cache",
-    "build:api": "nx run api:build --skip-nx-cache",
+    "build:api": "NX_DAEMON=false nx run api:build --skip-nx-cache",
     "build:client": "nx run client:build --skip-nx-cache",
-    "test:api": "nx run api:test --skip-nx-cache",
+    "test:api": "NX_DAEMON=false nx run api:test --skip-nx-cache",
     "test:client": "nx run client:test --skip-nx-cache",
     "e2e:api": "NX_DAEMON=false nx e2e api-e2e",
     "e2e:client": "NX_DAEMON=false nx e2e client-e2e"
