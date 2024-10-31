@@ -18,10 +18,16 @@ import { EmailService } from './email/email.service';
     MongooseModule.forFeature([{ name: USER_MODEL, schema: UserSchema }]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '8h' },
-      }),
+      useFactory: async (configService: ConfigService) => {
+        const secret = configService.get('JWT_SECRET');
+        if (!secret) {
+          throw new Error('JWT_SECRET is not defined');
+        }
+        return {
+          secret,
+          signOptions: { expiresIn: '8h' },
+        };
+      },
       inject: [ConfigService],
     }),
   ],
@@ -30,8 +36,8 @@ import { EmailService } from './email/email.service';
     AuthService,
     JwtStrategy,
     EmailService,
-    ConfigService,
+    ConfigService
   ],
-  exports: [AuthService],
+  exports: [AuthService, JwtModule],
 })
 export class AuthModule {}
