@@ -1,8 +1,14 @@
+// apps/api/src/auth/schemas/user.schema.ts
+
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-@Schema({ timestamps: true })
-export class User extends Document {
+export const USER_MODEL = 'User';
+
+export type UserDocument = User & Document;
+
+@Schema()
+export class User {
   @Prop({ type: String, required: true })
   name: string;
 
@@ -12,10 +18,10 @@ export class User extends Document {
   @Prop({ type: String, required: true })
   password: string;
 
-  @Prop({ type: String, default: null })
+  @Prop({ type: String })
   resetPasswordToken?: string;
 
-  @Prop({ type: Date, default: null })
+  @Prop({ type: Date })
   resetPasswordExpires?: Date;
 }
 

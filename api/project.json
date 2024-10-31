@@ -3,30 +3,7 @@
   "$schema": "../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "api/src",
   "projectType": "application",
-  "tags": [],
   "targets": {
-    "serve": {
-      "executor": "@nx/js:node",
-      "defaultConfiguration": "development",
-      "options": {
-        "buildTarget": "api:build"
-      },
-      "configurations": {
-        "development": {
-          "buildTarget": "api:build:development"
-        },
-        "production": {
-          "buildTarget": "api:build:production"
-        }
-      }
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
-      "options": {
-        "jestConfig": "api/jest.config.ts"
-      }
-    },
     "build": {
       "executor": "@nx/esbuild:esbuild",
       "outputs": ["{options.outputPath}"],
@@ -44,6 +21,9 @@
         ],
         "platform": "node",
         "format": ["cjs"],
+        "bundle": true,
+        "sourcemap": true,
+        "generatePackageJson": true,
         "external": [
           "@nestjs/microservices",
           "@nestjs/microservices/*",
@@ -54,23 +34,45 @@
           "@mapbox/node-pre-gyp",
           "*.html",
           "bcrypt"
-        ],
-        "bundle": true,
-        "sourcemap": true,
-        "generatePackageJson": true
+        ]
       },
       "configurations": {
         "production": {
           "minify": true,
           "sourcemap": false
+        },
+        "development": {
+          "optimization": false,
+          "sourcemap": true
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "api:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "api:build:development"
+        },
+        "production": {
+          "buildTarget": "api:build:production"
         }
       }
     },
     "lint": {
       "executor": "@nx/eslint:lint",
       "options": {
-        "lintFilePatterns": ["api/**/*.ts"],
-        "fix": true
+        "lintFilePatterns": ["api/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "api/jest.config.ts"
       }
     }
   }

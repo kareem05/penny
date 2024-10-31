@@ -11,6 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
+import { selectError } from '../store/auth.selectors';
 
 @Component({
   selector: 'app-login',
@@ -58,6 +59,11 @@ import { RouterModule } from '@angular/router';
               </mat-error>
             </mat-form-field>
 
+            <div *ngIf="error$ | async as error" class="error-message">
+              <mat-icon>error</mat-icon>
+              {{ error }}
+            </div>
+
             <div class="button-container">
               <button mat-raised-button color="primary" type="submit" 
                       [disabled]="loginForm.invalid || loading"
@@ -69,7 +75,7 @@ import { RouterModule } from '@angular/router';
 
             <div class="form-footer">
               <a mat-button routerLink="/auth/forgot-password">Forgot Password?</a>
-              <a mat-button routerLink="/signup">Don't have an account? Sign up</a>
+              <a mat-button routerLink="/auth/signup">Don't have an account? Sign up</a>
             </div>
           </form>
         </mat-card-content>
@@ -138,12 +144,22 @@ import { RouterModule } from '@angular/router';
     mat-form-field {
       width: 100%;
     }
+
+    .error-message {
+      color: #f44336;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
   `]
 })
 export class LoginComponent {
   loginForm: FormGroup;
   loading = false;
-  hidePassword = true;  // Add this line
+  hidePassword = true;
+  error$ = this.store.select(selectError);
 
   constructor(
     private fb: FormBuilder,
@@ -152,6 +168,13 @@ export class LoginComponent {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
+    });
+
+    // Subscribe to error state to reset loading
+    this.error$.subscribe(error => {
+      if (error) {
+        this.loading = false;
+      }
     });
   }
 

@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
 import { getModelToken } from '@nestjs/mongoose';
 import { AuthService } from './auth.service';
-import { User } from './schemas/user.schema';
+import { User, USER_MODEL } from './schemas/user.schema';
 import * as bcrypt from 'bcrypt';
 
 describe('AuthService', () => {
@@ -28,7 +28,7 @@ describe('AuthService', () => {
           },
         },
         {
-          provide: getModelToken(User.name),
+          provide: getModelToken(USER_MODEL),
           useValue: {
             create: jest.fn(),
             findOne: jest.fn(),
@@ -39,7 +39,7 @@ describe('AuthService', () => {
 
     service = module.get<AuthService>(AuthService);
     jwtService = module.get<JwtService>(JwtService);
-    userModel = module.get(getModelToken(User.name));
+    userModel = module.get(getModelToken(USER_MODEL));
   });
 
   it('should be defined', () => {
