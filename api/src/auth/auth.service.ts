@@ -1,22 +1,24 @@
 // apps/api/src/auth/auth.service.ts
 
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, Inject } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import { User, UserDocument, USER_MODEL } from './schemas/user.schema';
+import { UserDocument, USER_MODEL } from './schemas/user.schema';
 import { SignUpDto, LoginDto, ForgotPasswordDto } from './dto/auth.dto';
 import { ConfigService } from '@nestjs/config';
 import { EmailService } from './email/email.service';
+
+console.log('AuthService defined in:', __filename);
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(USER_MODEL) private userModel: Model<UserDocument>,
-    private jwtService: JwtService,
-    private configService: ConfigService,
-    private emailService: EmailService,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
+    private readonly emailService: EmailService,
   ) {
     console.log('AuthService constructor - jwtService:', !!this.jwtService);
   }
@@ -25,7 +27,7 @@ export class AuthService {
     const { email, password, name } = signUpDto;
 
     // Check if user exists
-    const existingUser: UserDocument | null = await this.userModel.findOne({ email });
+    const existingUser = await this.userModel.findOne({ email });
     if (existingUser) {
       throw new UnauthorizedException('Email already exists');
     }
@@ -34,7 +36,7 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create new user
-    const user: UserDocument = await this.userModel.create({
+    const user = await this.userModel.create({
       email,
       password: hashedPassword,
       name,
@@ -52,10 +54,10 @@ export class AuthService {
   async login(loginDto: LoginDto): Promise<any> {
     console.log('Login attempt for email:', loginDto.email);
     console.log('JwtService available in login:', !!this.jwtService);
-    
+
     const user = await this.userModel.findOne({ email: loginDto.email });
     console.log('User found:', !!user);
-    
+
     if (!user) {
       console.log('User not found');
       throw new UnauthorizedException('Invalid credentials');
@@ -72,20 +74,20 @@ export class AuthService {
     console.log('About to create token - jwtService exists:', !!this.jwtService);
     const token = this._createToken(user);
     console.log('Token generated successfully');
-    
+
     return {
       token,
       user: {
         id: user._id,
         email: user.email,
-        name: user.name
-      }
+        name: user.name,
+      },
     };
   }
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<any> {
     const { email } = forgotPasswordDto;
-    const user: UserDocument | null = await this.userModel.findOne({ email });
+    const user = await this.userModel.findOne({ email });
 
     if (!user) {
       throw new UnauthorizedException('User not found');
@@ -112,7 +114,7 @@ export class AuthService {
   private _createToken(user: UserDocument): string {
     console.log('_createToken called - jwtService exists:', !!this.jwtService);
     console.log('jwtService methods:', Object.keys(this.jwtService || {}));
-    
+
     if (!this.jwtService) {
       throw new Error('JwtService is not properly injected');
     }
@@ -122,7 +124,7 @@ export class AuthService {
       email: user.email,
     };
     console.log('Creating token with payload:', payload);
-    
+
     try {
       const token = this.jwtService.sign(payload);
       console.log('Token created successfully');
