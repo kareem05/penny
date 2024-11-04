@@ -8,7 +8,7 @@ import { LoginComponent } from './components/login.component';
 import { SignupComponent } from './components/signup.component';
 import { ForgotPasswordComponent } from './components/forgot-password.component';
 import { ResetPasswordComponent } from './components/reset-password.component';
-import { AuthService } from './services/auth.service';
+import { AuthService } from './services/client-auth.service';
 
 @NgModule({
   declarations: [

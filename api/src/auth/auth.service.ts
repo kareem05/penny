@@ -1,6 +1,6 @@
 // apps/api/src/auth/auth.service.ts
 
-import { Injectable, UnauthorizedException, Inject } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -10,12 +10,10 @@ import { SignUpDto, LoginDto, ForgotPasswordDto } from './dto/auth.dto';
 import { ConfigService } from '@nestjs/config';
 import { EmailService } from './email/email.service';
 
-console.log('AuthService defined in:', __filename);
-
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel(USER_MODEL) private userModel: Model<UserDocument>,
+    @InjectModel(USER_MODEL) private readonly userModel: Model<UserDocument>,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly emailService: EmailService,

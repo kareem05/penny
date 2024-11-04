@@ -4,9 +4,6 @@ import { Controller, Post, Body } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignUpDto, LoginDto, ForgotPasswordDto } from './dto/auth.dto';
 
-// Remove or comment out the require.resolve line
-// console.log('AuthService imported from:', require.resolve('./auth.service'));
-
 // Optionally, log the AuthService to verify it's imported
 console.log('AuthService imported:', AuthService);
 
